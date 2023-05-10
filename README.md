@@ -67,6 +67,21 @@ The only Discord permission this bot requires is the `Send Messages` permission,
 
 The bot does not require any additional permissions to purge its own messages.
 
+Time zones and log files
+------------------------
+
+This bot expects log files to contain timestamps in the UTC time standard. By default, the Satisfactory Dedicated Server logs contain UTC timestamps, irrespective of the local time zone of the hosting server.
+
+In other words, you do not need to adjust the timezone of your hosting server to UTC for this bot to work. This bot should work even if it is running on a host that has a different time zone to that of your Satisfactory Dedicated Server.
+
+However, this bot will **not** work with a Satisfactory Dedicated Server that is running with any of the following command line arguments:
+
+* `-LocalLogTimes`
+* `-LogTimeCode`
+* `-NoLogTimes`
+
+If any of these command line arguments are detected, the bot will abort with an error.
+
 Installation
 ------------
 
