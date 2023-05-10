@@ -5,12 +5,12 @@ const joinSucceededRegex = /^\[(.+?)\]\[.+\]LogNet: Join succeeded: (.*?)?$/;
 const connectionCloseRegex = /^\[(.+?)\]\[.+\]LogNet: UNetConnection::Close: .*, Driver: GameNetDriver .*, UniqueId: (.*?),.*$/;
 
 const parseTimestamp = (timestamp) => Date.parse(
-  timestamp.replace('-', 'T')
+  `${timestamp.replace('-', 'T')
     .replace(':', '.')
     .replace('.', '-')
     .replace('.', '-')
     .replace('.', ':')
-    .replace('.', ':'),
+    .replace('.', ':')}Z`,
 );
 
 const parser = {
