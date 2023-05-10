@@ -177,6 +177,8 @@ client.on('ready', async () => {
       let userId;
       let leftPlayerName;
       let leftPlayerJoinTime;
+      let commandLine;
+      let commandLineArgument;
 
       switch (data.type) {
         case 'Log file open':
@@ -184,6 +186,19 @@ client.on('ready', async () => {
           console.log('Log file open', data.date);
           db.players = {};
           fs.writeFileSync(dbPath, JSON.stringify(db, null, 2), 'utf8');
+          break;
+        case 'Command line':
+          commandLine = data.commandLine.match(/\S+/g);
+          if (Array.isArray(commandLine)) {
+            commandLine.forEach((arg) => {
+              commandLineArgument = arg.match(/^-(?:NoLogTimes|LocalLogTimes|LogTimeCode)$/i);
+              if (Array.isArray(commandLineArgument)) {
+                console.error(`Unsupported command line argument '${commandLineArgument[0]}' detected. Aborting...`);
+                process.exit(2);
+              }
+            });
+          }
+
           break;
         case 'Login request':
           // if player not in database

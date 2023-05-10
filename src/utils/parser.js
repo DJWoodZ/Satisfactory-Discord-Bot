@@ -1,21 +1,23 @@
 const logFileOpenRegex = /Log file open, (.*)$/;
+const logFileCommandLineRegex = /^LogInit: Command Line: (.*)$/;
 const loginRequestRegex = /^\[(.+?)\]\[.+\]LogNet: Login request: .*\?Name=(.*?)? userId: (.*)? platform: .*$/;
 const joinRequestRegex = /^\[(.+?)\]\[.+\]LogNet: Join request: .*\?Name=(.*?)?\?SplitscreenCount=.*$/;
 const joinSucceededRegex = /^\[(.+?)\]\[.+\]LogNet: Join succeeded: (.*?)?$/;
 const connectionCloseRegex = /^\[(.+?)\]\[.+\]LogNet: UNetConnection::Close: .*, Driver: GameNetDriver .*, UniqueId: (.*?),.*$/;
 
 const parseTimestamp = (timestamp) => Date.parse(
-  timestamp.replace('-', 'T')
+  `${timestamp.replace('-', 'T')
     .replace(':', '.')
     .replace('.', '-')
     .replace('.', '-')
     .replace('.', ':')
-    .replace('.', ':'),
+    .replace('.', ':')}Z`,
 );
 
 const parser = {
   parse: (message) => {
     const logFileOpen = message.match(logFileOpenRegex);
+    const logFileCommandLine = message.match(logFileCommandLineRegex);
     const loginRequest = message.match(loginRequestRegex);
     const joinRequest = message.match(joinRequestRegex);
     const joinSucceeded = message.match(joinSucceededRegex);
@@ -25,6 +27,13 @@ const parser = {
       return {
         type: 'Log file open',
         date: logFileOpen[1],
+      };
+    }
+
+    if (Array.isArray(logFileCommandLine)) {
+      return {
+        type: 'Command line',
+        commandLine: logFileCommandLine[1],
       };
     }
 
