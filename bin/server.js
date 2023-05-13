@@ -29,8 +29,10 @@ const { getNextPurge, willPurge, purgeOldMessages } = require('../src/utils/purg
 const invalidUnknownNamesAndIds = ['INVALID', 'UNKNOWN'];
 
 const dbPath = process.env.SATISFACTORY_BOT_DB_PATH;
-const pollIntervalMillis = (Math
-  .max(parseInt(process.env.SATISFACTORY_BOT_POLL_INTERVAL_MINUTES, 10), 1) || 1) * 60000;
+const pollIntervalMillis = Math.max(
+  parseInt(process.env.SATISFACTORY_BOT_POLL_INTERVAL_MINUTES, 10) || 1, // integer or 1
+  1, // minimum of 1
+) * 60000;
 
 let intervalTimer = null;
 
