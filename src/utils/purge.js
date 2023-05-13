@@ -7,6 +7,16 @@ const fetchMessages = (channel, lastKey) => channel.messages.fetch({
   ...(lastKey && { before: lastKey }),
 });
 
+const getPurgeTime = () => (parseInt(
+  process.env.SATISFACTORY_BOT_PURGE_DISCORD_CHANNEL_AFTER_DAYS,
+  10,
+) || -1) * 24 * 60 * 60 * 1000;
+
+const getPurgeLines = () => parseInt(
+  process.env.SATISFACTORY_BOT_PURGE_DISCORD_CHANNEL_AFTER_LINES,
+  10,
+) || -1;
+
 const purge = {
   getNextPurge: () => {
     const now = new Date().getTime();
@@ -28,7 +38,9 @@ const purge = {
       // and we don't have a posting channel name, or we do and it matches the purge channel name
       && (!process.env.SATISFACTORY_BOT_DISCORD_CHANNEL_NAME
         || process.env.SATISFACTORY_BOT_PURGE_DISCORD_CHANNEL_NAME
-        === process.env.SATISFACTORY_BOT_DISCORD_CHANNEL_NAME)),
+        === process.env.SATISFACTORY_BOT_DISCORD_CHANNEL_NAME))
+      // and we have a time or lines to purge
+      && (getPurgeTime() >= 0 || getPurgeLines() >= 0),
 
   purgeOldMessages: (client) => {
     if (!client) {
@@ -48,14 +60,8 @@ const purge = {
 
     if (channels.size === 1) {
       const now = new Date().getTime();
-      const purgeTime = (parseInt(
-        process.env.SATISFACTORY_BOT_PURGE_DISCORD_CHANNEL_AFTER_DAYS,
-        10,
-      ) || -1) * 24 * 60 * 60 * 1000;
-      const purgeLines = (parseInt(
-        process.env.SATISFACTORY_BOT_PURGE_DISCORD_CHANNEL_AFTER_LINES,
-        10,
-      ) || -1);
+      const purgeTime = getPurgeTime();
+      const purgeLines = getPurgeLines();
 
       // there will only be one
       channels.forEach(async (channel) => {
