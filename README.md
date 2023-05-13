@@ -6,7 +6,7 @@ A bot that monitors a [Satisfactory Dedicated Server](https://satisfactory.fando
 What does this bot do?
 ----------------------
 
-It will show information such as the server's status, the number of players online and players who have joined or left the game. It can also purge its own old messages after a number of days to keep the channel tidy.
+It will show information such as the server's status, the number of players online and players who have joined or left the game. It can also purge its own messages to keep the channel tidy.
 
 ### Channel updates
 
@@ -132,6 +132,7 @@ If you do not want the bot to purge its old messages, simply leave these values 
 * `SATISFACTORY_BOT_LOG_LOCATION` (Default: `/home/steam/SatisfactoryDedicatedServer/FactoryGame/Saved/Logs/FactoryGame.log`) - The location of the server's log file
 * `SATISFACTORY_BOT_POLL_INTERVAL_MINUTES` (Default: `1`) - How frequently to poll the Dedicated Server (in minutes)
 * `SATISFACTORY_BOT_PURGE_DISCORD_CHANNEL_AFTER_DAYS` (Default: `7`) - How old messages must be before they are deleted (in days)
+* `SATISFACTORY_BOT_PURGE_DISCORD_CHANNEL_AFTER_LINES` (Default: *blank*) - The maximum number of messages to keep
 * `SATISFACTORY_BOT_PURGE_DISCORD_CHANNEL_HOUR` (Default: `2`) - The hour of the day to perform the purge in UTC (e.g. `2` for 2am (UTC))
 * `SATISFACTORY_BOT_PURGE_DISCORD_CHANNEL_NAME` (Default: *blank*) - The Discord channel name to purge (leave blank to disable purging)
 * `SATISFACTORY_BOT_PURGE_DISCORD_CHANNEL_SERVER_NAME` (Default: *blank*) - The Discord server name with the channel to purge (leave blank to disable purging)

@@ -48,10 +48,14 @@ const purge = {
 
     if (channels.size === 1) {
       const now = new Date().getTime();
-      const purgeTime = now - (parseInt(
+      const purgeTime = (parseInt(
         process.env.SATISFACTORY_BOT_PURGE_DISCORD_CHANNEL_AFTER_DAYS,
         10,
-      ) || 7) * 24 * 60 * 60 * 1000;
+      ) || -1) * 24 * 60 * 60 * 1000;
+      const purgeLines = (parseInt(
+        process.env.SATISFACTORY_BOT_PURGE_DISCORD_CHANNEL_AFTER_LINES,
+        10,
+      ) || -1);
 
       // there will only be one
       channels.forEach(async (channel) => {
@@ -70,16 +74,30 @@ const purge = {
           lastKey = fetchedMessages.lastKey();
         }
 
+        // bot messages, ensure sorted by newest first
         const botMessages = messages.filter((message) => message.author.bot
-            && message.author.id === botUserId);
+            && message.author.id === botUserId)
+          .sort((a, b) => b.createdTimestamp - a.createdTimestamp);
 
-        const oldBotMessages = botMessages
-          .filter((message) => message.createdTimestamp < purgeTime);
+        const botMessagesToPurge = botMessages
+          .filter((message, index) => {
+            // if purging by line and index is equal or greater
+            if (purgeLines >= 0 && index >= purgeLines) {
+              return true;
+            }
 
-        if (oldBotMessages.length > 0) {
-          console.log(`Purging ${oldBotMessages.length} of ${botMessages.length} messages...`);
+            // if purging by created time and message is older
+            if (purgeTime >= 0 && message.createdTimestamp < (now - purgeTime)) {
+              return true;
+            }
 
-          oldBotMessages.forEach((message) => {
+            return false;
+          });
+
+        if (botMessagesToPurge.length > 0) {
+          console.log(`Purging ${botMessagesToPurge.length} of ${botMessages.length} messages...`);
+
+          botMessagesToPurge.forEach((message) => {
             message.delete();
           });
         }
