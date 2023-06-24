@@ -9,6 +9,7 @@ const fs = require('fs');
 const onExit = require('signal-exit');
 const { Tail } = require('tail');
 const config = require('dotenv-flow').config();
+const waitOn = require('wait-on');
 
 if (Object.keys(config.parsed).length === 0) {
   console.error('Environment variables could not be loaded. Did you create a .env or .env.local file?');
@@ -168,125 +169,141 @@ client.on('ready', async () => {
 
   await update();
 
-  const tail = new Tail(process.env.SATISFACTORY_BOT_LOG_LOCATION, {
-    fromBeginning: true,
-  });
-
-  tail.on('line', (message) => {
-    const data = parse(message);
-
-    if (data !== null) {
-      let userId;
-      let leftPlayerName;
-      let leftPlayerJoinTime;
-      let commandLine;
-      let commandLineArgument;
-
-      switch (data.type) {
-        case 'Log file open':
-          // new log file
-          console.log('Log file open', data.date);
-          db.players = {};
-          fs.writeFileSync(dbPath, JSON.stringify(db, null, 2), 'utf8');
-          break;
-        case 'Command line':
-          commandLine = data.commandLine.match(/\S+/g);
-          if (Array.isArray(commandLine)) {
-            commandLine.forEach((arg) => {
-              commandLineArgument = arg.match(/^-(?:NoLogTimes|LocalLogTimes|LogTimeCode)$/i);
-              if (Array.isArray(commandLineArgument)) {
-                console.error(`Unsupported command line argument '${commandLineArgument[0]}' detected. Aborting...`);
-                process.exit(2);
-              }
-            });
-          }
-
-          break;
-        case 'Login request':
-          // if player not in database
-          console.log('Login request', data.userId, data.name);
-          if (invalidUnknownNamesAndIds.includes(data.userId)) {
-            if (data.timestamp >= initTime && db?.server?.online) {
-              sendMessage(`:warning: **${data.name}'s** user ID is **${formatList(invalidUnknownNamesAndIds)}**. Character inventory may be missing. Please try restarting and rejoining...`);
-            }
-          } else if (!getPlayerFromDB(data.userId)) {
-            db.players[data.userId] = {
-              userId: data.userId,
-              name: data.name,
-              joinRequested: 0,
-              joined: 0,
-            };
-          } else {
-            // update/reset player
-            getPlayerFromDB(data.userId).name = data.name;
-            getPlayerFromDB(data.userId).joinRequested = 0;
-            getPlayerFromDB(data.userId).joined = 0;
-          }
-          break;
-        case 'Join request':
-          console.log('Join request', data.name);
-          userId = Object.values(db.players).filter(({ name }) => name === data.name)?.[0]?.userId;
-          if (userId && getPlayerFromDB(userId)) {
-            // increment joinRequested
-            getPlayerFromDB(userId).joinRequested += 1;
-          }
-          break;
-        case 'Join succeeded':
-          console.log('Join succeeded', data.name);
-          userId = Object.values(db.players).filter(({ name }) => name === data.name)?.[0]?.userId;
-          if (userId && getPlayerFromDB(userId) && getPlayerFromDB(userId).joinRequested > 0) {
-            getPlayerFromDB(userId).joined += 1;
-
-            // set joinTime based on most recent join
-            getPlayerFromDB(userId).joinTime = data.timestamp;
-
-            // notify of each new join
-            if (data.timestamp >= initTime && db?.server?.online) {
-              const onlinePlayers = getOnlinePlayers(db);
-              let string = `:astronaut: **${onlinePlayers.length}** of ${process.env.SATISFACTORY_BOT_SERVER_MAX_PLAYERS} players online${(onlinePlayers.length > 0 ? `: **${formatPlayers(onlinePlayers)}**` : '')} (${getTimestamp()}).\n`;
-              string += `    :arrow_right: **${data.name}** just joined the server.`;
-              sendMessage(string);
-              client.user.setActivity(`online: ${getOnlinePlayers(db).length}/${process.env.SATISFACTORY_BOT_SERVER_MAX_PLAYERS}`);
-            }
-          }
-
-          break;
-        case 'Connection close':
-          // if the player is in database
-          console.log('Connection close', data.userId);
-          if (invalidUnknownNamesAndIds.includes(data.userId)) {
-            if (data.timestamp >= initTime && db?.server?.online) {
-              sendMessage(`:information_source: An **${formatList(invalidUnknownNamesAndIds)}** connection was closed.`);
-            }
-          } else if (getPlayerFromDB(data.userId)) {
-            // delete
-            leftPlayerName = getPlayerFromDB(data.userId).name;
-            leftPlayerJoinTime = getPlayerFromDB(data.userId).joinTime;
-            delete db.players[data.userId];
-
-            // notify of each leave
-            if (data.timestamp >= initTime && db?.server?.online) {
-              const onlinePlayers = getOnlinePlayers(db);
-              const playTimeInMinutes = Math
-                .round((new Date().getTime() - leftPlayerJoinTime) / 60000);
-              let string = `:astronaut: **${onlinePlayers.length}** of ${process.env.SATISFACTORY_BOT_SERVER_MAX_PLAYERS} players online${(onlinePlayers.length > 0 ? `: **${formatPlayers(onlinePlayers)}**` : '')} (${getTimestamp()}).\n`;
-              string += `    :arrow_left: **${leftPlayerName}** just left the server after playing for **${formatMinutes(playTimeInMinutes)}**.`;
-              sendMessage(string);
-              client.user.setActivity(`online: ${getOnlinePlayers(db).length}/${process.env.SATISFACTORY_BOT_SERVER_MAX_PLAYERS}`);
-            }
-          }
-          break;
-        default:
-          break;
-      }
-
-      fs.writeFileSync(dbPath, JSON.stringify(db, null, 2), 'utf8');
-    }
-  });
-
   intervalTimer = setInterval(() => {
     update();
   }, pollIntervalMillis);
+
+  try {
+    if (!fs.existsSync(process.env.SATISFACTORY_BOT_LOG_LOCATION)) {
+      console.log(`Waiting for log file to exist: ${process.env.SATISFACTORY_BOT_LOG_LOCATION}`);
+      await waitOn({
+        resources: [
+          process.env.SATISFACTORY_BOT_LOG_LOCATION,
+        ],
+      });
+    }
+
+    const tail = new Tail(process.env.SATISFACTORY_BOT_LOG_LOCATION, {
+      fromBeginning: true,
+    });
+
+    tail.on('line', (message) => {
+      const data = parse(message);
+
+      if (data !== null) {
+        let userId;
+        let leftPlayerName;
+        let leftPlayerJoinTime;
+        let commandLine;
+        let commandLineArgument;
+
+        switch (data.type) {
+          case 'Log file open':
+            // new log file
+            console.log('Log file open', data.date);
+            db.players = {};
+            fs.writeFileSync(dbPath, JSON.stringify(db, null, 2), 'utf8');
+            break;
+          case 'Command line':
+            commandLine = data.commandLine.match(/\S+/g);
+            if (Array.isArray(commandLine)) {
+              commandLine.forEach((arg) => {
+                commandLineArgument = arg.match(/^-(?:NoLogTimes|LocalLogTimes|LogTimeCode)$/i);
+                if (Array.isArray(commandLineArgument)) {
+                  console.error(`Unsupported command line argument '${commandLineArgument[0]}' detected. Aborting...`);
+                  process.exit(2);
+                }
+              });
+            }
+
+            break;
+          case 'Login request':
+            // if player not in database
+            console.log('Login request', data.userId, data.name);
+            if (invalidUnknownNamesAndIds.includes(data.userId)) {
+              if (data.timestamp >= initTime && db?.server?.online) {
+                sendMessage(`:warning: **${data.name}'s** user ID is **${formatList(invalidUnknownNamesAndIds)}**. Character inventory may be missing. Please try restarting and rejoining...`);
+              }
+            } else if (!getPlayerFromDB(data.userId)) {
+              db.players[data.userId] = {
+                userId: data.userId,
+                name: data.name,
+                joinRequested: 0,
+                joined: 0,
+              };
+            } else {
+              // update/reset player
+              getPlayerFromDB(data.userId).name = data.name;
+              getPlayerFromDB(data.userId).joinRequested = 0;
+              getPlayerFromDB(data.userId).joined = 0;
+            }
+            break;
+          case 'Join request':
+            console.log('Join request', data.name);
+            userId = Object.values(db.players)
+              .filter(({ name }) => name === data.name)?.[0]?.userId;
+            if (userId && getPlayerFromDB(userId)) {
+              // increment joinRequested
+              getPlayerFromDB(userId).joinRequested += 1;
+            }
+            break;
+          case 'Join succeeded':
+            console.log('Join succeeded', data.name);
+            userId = Object.values(db.players)
+              .filter(({ name }) => name === data.name)?.[0]?.userId;
+            if (userId && getPlayerFromDB(userId) && getPlayerFromDB(userId).joinRequested > 0) {
+              getPlayerFromDB(userId).joined += 1;
+
+              // set joinTime based on most recent join
+              getPlayerFromDB(userId).joinTime = data.timestamp;
+
+              // notify of each new join
+              if (data.timestamp >= initTime && db?.server?.online) {
+                const onlinePlayers = getOnlinePlayers(db);
+                let string = `:astronaut: **${onlinePlayers.length}** of ${process.env.SATISFACTORY_BOT_SERVER_MAX_PLAYERS} players online${(onlinePlayers.length > 0 ? `: **${formatPlayers(onlinePlayers)}**` : '')} (${getTimestamp()}).\n`;
+                string += `    :arrow_right: **${data.name}** just joined the server.`;
+                sendMessage(string);
+                client.user.setActivity(`online: ${getOnlinePlayers(db).length}/${process.env.SATISFACTORY_BOT_SERVER_MAX_PLAYERS}`);
+              }
+            }
+
+            break;
+          case 'Connection close':
+            // if the player is in database
+            console.log('Connection close', data.userId);
+            if (invalidUnknownNamesAndIds.includes(data.userId)) {
+              if (data.timestamp >= initTime && db?.server?.online) {
+                sendMessage(`:information_source: An **${formatList(invalidUnknownNamesAndIds)}** connection was closed.`);
+              }
+            } else if (getPlayerFromDB(data.userId)) {
+              // delete
+              leftPlayerName = getPlayerFromDB(data.userId).name;
+              leftPlayerJoinTime = getPlayerFromDB(data.userId).joinTime;
+              delete db.players[data.userId];
+
+              // notify of each leave
+              if (data.timestamp >= initTime && db?.server?.online) {
+                const onlinePlayers = getOnlinePlayers(db);
+                const playTimeInMinutes = Math
+                  .round((new Date().getTime() - leftPlayerJoinTime) / 60000);
+                let string = `:astronaut: **${onlinePlayers.length}** of ${process.env.SATISFACTORY_BOT_SERVER_MAX_PLAYERS} players online${(onlinePlayers.length > 0 ? `: **${formatPlayers(onlinePlayers)}**` : '')} (${getTimestamp()}).\n`;
+                string += `    :arrow_left: **${leftPlayerName}** just left the server after playing for **${formatMinutes(playTimeInMinutes)}**.`;
+                sendMessage(string);
+                client.user.setActivity(`online: ${getOnlinePlayers(db).length}/${process.env.SATISFACTORY_BOT_SERVER_MAX_PLAYERS}`);
+              }
+            }
+            break;
+          default:
+            break;
+        }
+
+        fs.writeFileSync(dbPath, JSON.stringify(db, null, 2), 'utf8');
+      }
+    });
+  } catch (error) {
+    console.error(error);
+    process.exit(3);
+  }
 });
 
 const initialise = () => {
