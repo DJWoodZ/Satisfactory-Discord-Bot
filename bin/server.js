@@ -116,7 +116,6 @@ const update = async () => {
         online: false,
         unreachable: false,
       };
-      db.players = {};
     }
 
     if (db?.server?.online) {
@@ -221,7 +220,7 @@ client.on('ready', async () => {
             // if player not in database
             console.log('Login request', data.userId, data.name);
             if (invalidUnknownNamesAndIds.includes(data.userId)) {
-              if (data.timestamp >= initTime && db?.server?.online) {
+              if (data.timestamp >= initTime && (process.env.SATISFACTORY_BOT_IGNORE_POLL_STATE_WHEN_MESSAGING !== 'false' || db?.server?.online)) {
                 sendMessage(`:warning: **${data.name}'s** user ID is **${formatList(invalidUnknownNamesAndIds)}**. Character inventory may be missing. Please try restarting and rejoining...`);
               }
             } else if (!getPlayerFromDB(data.userId)) {
@@ -258,12 +257,14 @@ client.on('ready', async () => {
               getPlayerFromDB(userId).joinTime = data.timestamp;
 
               // notify of each new join
-              if (data.timestamp >= initTime && db?.server?.online) {
+              if (data.timestamp >= initTime && (process.env.SATISFACTORY_BOT_IGNORE_POLL_STATE_WHEN_MESSAGING !== 'false' || db?.server?.online)) {
                 const onlinePlayers = getOnlinePlayers(db);
                 let string = `:astronaut: **${onlinePlayers.length}** of ${process.env.SATISFACTORY_BOT_SERVER_MAX_PLAYERS} players online${(onlinePlayers.length > 0 ? `: **${formatPlayers(onlinePlayers)}**` : '')} (${getTimestamp()}).\n`;
                 string += `    :arrow_right: **${data.name}** just joined the server.`;
                 sendMessage(string);
-                client.user.setActivity(`online: ${getOnlinePlayers(db).length}/${process.env.SATISFACTORY_BOT_SERVER_MAX_PLAYERS}`);
+                if (db?.server?.online) {
+                  client.user.setActivity(`online: ${getOnlinePlayers(db).length}/${process.env.SATISFACTORY_BOT_SERVER_MAX_PLAYERS}`);
+                }
               }
             }
 
@@ -272,7 +273,7 @@ client.on('ready', async () => {
             // if the player is in database
             console.log('Connection close', data.userId);
             if (invalidUnknownNamesAndIds.includes(data.userId)) {
-              if (data.timestamp >= initTime && db?.server?.online) {
+              if (data.timestamp >= initTime && (process.env.SATISFACTORY_BOT_IGNORE_POLL_STATE_WHEN_MESSAGING !== 'false' || db?.server?.online)) {
                 sendMessage(`:information_source: An **${formatList(invalidUnknownNamesAndIds)}** connection was closed.`);
               }
             } else if (getPlayerFromDB(data.userId)) {
@@ -282,14 +283,16 @@ client.on('ready', async () => {
               delete db.players[data.userId];
 
               // notify of each leave
-              if (data.timestamp >= initTime && db?.server?.online) {
+              if (data.timestamp >= initTime && (process.env.SATISFACTORY_BOT_IGNORE_POLL_STATE_WHEN_MESSAGING !== 'false' || db?.server?.online)) {
                 const onlinePlayers = getOnlinePlayers(db);
                 const playTimeInMinutes = Math
                   .round((new Date().getTime() - leftPlayerJoinTime) / 60000);
                 let string = `:astronaut: **${onlinePlayers.length}** of ${process.env.SATISFACTORY_BOT_SERVER_MAX_PLAYERS} players online${(onlinePlayers.length > 0 ? `: **${formatPlayers(onlinePlayers)}**` : '')} (${getTimestamp()}).\n`;
                 string += `    :arrow_left: **${leftPlayerName}** just left the server after playing for **${formatMinutes(playTimeInMinutes)}**.`;
                 sendMessage(string);
-                client.user.setActivity(`online: ${getOnlinePlayers(db).length}/${process.env.SATISFACTORY_BOT_SERVER_MAX_PLAYERS}`);
+                if (db?.server?.online) {
+                  client.user.setActivity(`online: ${getOnlinePlayers(db).length}/${process.env.SATISFACTORY_BOT_SERVER_MAX_PLAYERS}`);
+                }
               }
             }
             break;
