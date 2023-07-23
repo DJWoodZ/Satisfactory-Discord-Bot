@@ -6,7 +6,7 @@ const {
 } = require('discord.js');
 const merge = require('deepmerge');
 const fs = require('fs');
-const onExit = require('signal-exit');
+const { onExit } = require('signal-exit');
 const { Tail } = require('tail');
 const config = require('dotenv-flow').config();
 const waitOn = require('wait-on');

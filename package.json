@@ -24,15 +24,15 @@
   "dependencies": {
     "@djwoodz/satisfactory-dedicated-server-query-port-probe": "^0.1.0",
     "deepmerge": "^4.3.1",
-    "discord.js": "^14.8.0",
+    "discord.js": "^14.11.0",
     "dotenv-flow": "^3.2.0",
     "lodash": "^4.17.21",
-    "signal-exit": "^3.0.7",
+    "signal-exit": "^4.0.2",
     "tail": "^2.2.6",
     "wait-on": "^7.0.1"
   },
   "devDependencies": {
-    "eslint": "^8.34.0",
+    "eslint": "^8.45.0",
     "eslint-config-airbnb-base": "^15.0.0",
     "eslint-plugin-import": "^2.27.5"
   }
