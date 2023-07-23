@@ -100,7 +100,7 @@ Copy the `.env` file and create an `.env.local` file for your environment variab
 
 ### Can I just edit the `.env` file?
 
-It would work but you shouldn't do that. It is good practice to create and edit an `.env.local` file because it will be excluded from commits by the `.gitignore` file, whereas the `.env` file will not excluded from commits.
+It would work but you shouldn't do that. It is good practice to create and edit an `.env.local` file because it will be excluded from commits by the `.gitignore` file, whereas the `.env` file will not be excluded from commits.
 
 ### Which variables must I edit?
 
