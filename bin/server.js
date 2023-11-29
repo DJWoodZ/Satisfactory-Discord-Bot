@@ -11,7 +11,7 @@ const { Tail } = require('tail');
 const config = require('dotenv-flow').config();
 const waitOn = require('wait-on');
 
-if (Object.keys(config.parsed).length === 0) {
+if (Object.keys(config.parsed).length === 0 && !process.env.SATISFACTORY_BOT_DOCKER) {
   console.error('Environment variables could not be loaded. Did you create a .env or .env.local file?');
   process.exit(1);
 }
