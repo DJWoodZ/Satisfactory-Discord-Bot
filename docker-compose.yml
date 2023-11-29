@@ -1,0 +1,30 @@
+version: '3.7'
+services:
+  server:
+    hostname: 'server'
+    image: 'wolveix/satisfactory-server:latest'
+    ports:
+      - '7777:7777/udp'
+      - '15000:15000/udp'
+      - '15777:15777/udp'
+    volumes:
+      - './config:/config'
+    environment:
+      - MAXPLAYERS=8
+      - PGID=1000
+      - PUID=1000
+      - STEAMBETA=false
+    restart: unless-stopped
+  bot:
+    hostname: 'bot'
+    build:
+      context: .
+    volumes:
+      - './data:/data'
+      - './config:/config'
+    environment:
+      - SATISFACTORY_BOT_SERVER_MAX_PLAYERS=8
+      - SATISFACTORY_BOT_DISCORD_CHANNEL_NAME=satisfactory
+      - SATISFACTORY_BOT_DISCORD_CHANNEL_SERVER_NAME=My Server
+      - SATISFACTORY_BOT_DISCORD_TOKEN=YOUR_DISCORD_TOKEN
+      - SATISFACTORY_BOT_LOG_LOCATIO=/config/gamefiles/FactoryGame/Saved/Logs/FactoryGame.log
