@@ -27,4 +27,4 @@ services:
       - SATISFACTORY_BOT_DISCORD_CHANNEL_NAME=satisfactory
       - SATISFACTORY_BOT_DISCORD_CHANNEL_SERVER_NAME=My Server
       - SATISFACTORY_BOT_DISCORD_TOKEN=YOUR_DISCORD_TOKEN
-      - SATISFACTORY_BOT_LOG_LOCATIO=/config/gamefiles/FactoryGame/Saved/Logs/FactoryGame.log
+      - SATISFACTORY_BOT_LOG_LOCATION=/config/gamefiles/FactoryGame/Saved/Logs/FactoryGame.log
