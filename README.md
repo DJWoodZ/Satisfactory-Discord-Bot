@@ -209,13 +209,13 @@ The `SATISFACTORY_BOT_LOG_LOCATION` value in `.env.local` will also be ignored b
 
   If you followed [these installation instructions](https://satisfactory.fandom.com/wiki/Dedicated_servers#SteamCMD), `/opt/satisfactory/config/gamefiles/FactoryGame/Saved/Logs/FactoryGame.log` on the host machine should map to `/home/steam/SatisfactoryDedicatedServer/FactoryGame/Saved/Logs/FactoryGame.log` (or the equivalent thereof).
 
-  If log file is not accessible on the host machine at `/opt/satisfactory/config/gamefiles/FactoryGame/Saved/Logs/FactoryGame.log`, you will either need to create a mount point to make the log file accessible at that location or you will need to edit the `compose.yaml` file from this project with the actual location.
+  If the log file is not accessible on the host machine at `/opt/satisfactory/config/gamefiles/FactoryGame/Saved/Logs/FactoryGame.log`, you will either need to create a mount point to make the log file accessible at that location or you will need to edit the `compose.yaml` file from this project with the actual location.
 
 * **wolveix/satisfactory-server (Docker) Log File Location**
 
   If you followed [these installation instructions](https://github.com/wolveix/satisfactory-server#setup), `/opt/satisfactory/config/gamefiles/FactoryGame/Saved/Logs/FactoryGame.log` on the host machine should map to `/path/to/config/gamefiles/FactoryGame/Saved/Logs/FactoryGame.log` (or the equivalent thereof).
 
-  Note: `/path/to/config` is not a real path. You are expected to replace this with the actual path you chose for the wolveix/satisfactory-server config. If you chose `/opt/satisfactory/config`, no additional steps will be necessary. If log file is not accessible on the host machine at `/opt/satisfactory/config/gamefiles/FactoryGame/Saved/Logs/FactoryGame.log`, you will either need to create a mount point to make the log file accessible at that location or you will need to edit the `compose.yaml` file from this project with the actual location.
+  Note: `/path/to/config` is not a real path. You are expected to replace this with the actual path you chose for the wolveix/satisfactory-server config. If you chose `/opt/satisfactory/config`, no additional steps will be necessary. If the log file is not accessible on the host machine at `/opt/satisfactory/config/gamefiles/FactoryGame/Saved/Logs/FactoryGame.log`, you will either need to create a mount point to make the log file accessible at that location or you will need to edit the `compose.yaml` file from this project with the actual location.
 
 You need [git](https://git-scm.com/), [Docker](https://docs.docker.com/engine/install/) and [Docker Compose](https://docs.docker.com/compose/install/) to be installed and then you must clone this repository:
 
