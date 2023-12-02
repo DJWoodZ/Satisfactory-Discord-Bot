@@ -8,10 +8,12 @@ const merge = require('deepmerge');
 const fs = require('fs');
 const { onExit } = require('signal-exit');
 const { Tail } = require('tail');
-const config = require('dotenv-flow').config();
+const config = require('dotenv-flow').config({
+  silent: true,
+});
 const waitOn = require('wait-on');
 
-if (Object.keys(config.parsed).length === 0) {
+if (Object.keys(config.parsed || {}).length === 0 && typeof process.env.SATISFACTORY_BOT_DISCORD_TOKEN === 'undefined') {
   console.error('Environment variables could not be loaded. Did you create a .env or .env.local file?');
   process.exit(1);
 }

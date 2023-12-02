@@ -46,7 +46,6 @@ This bot works with a single Satisfactory Dedicated Server and will post updates
 
 It will also update its current activity (status) to show the Dedicated Server's current status and number of online players:
 
-
 **Satisfactory** [BOT]
 <br />
 <sup>Playing **online: 2/4**</sup>
@@ -82,19 +81,7 @@ However, this bot will **not** work with a Satisfactory Dedicated Server that is
 
 If any of these command line arguments are detected, the bot will abort with an error.
 
-Installation
-------------
-
-You need [git](https://git-scm.com/) and [Node.js](https://nodejs.org/) to be installed, then you must clone this repository and install the dependencies:
-
-```
-git clone git@github.com:DJWoodZ/Satisfactory-Discord-Bot.git
-cd Satisfactory-Discord-Bot
-npm install
-```
-
-Environment Variables
----------------------
+<h2 id="env-vars">Environment Variables</h2>
 
 Copy the `.env` file and create an `.env.local` file for your environment variables. You will then need to edit the `.env.local` file.
 
@@ -142,8 +129,27 @@ If you do not want the bot to purge its old messages, simply leave these values 
 * `SATISFACTORY_BOT_SERVER_QUERY_PORT` (Default: `15777`) - The Dedicated Server's query port
 * `SATISFACTORY_BOT_SERVER_QUERY_TIMEOUT_MS` (Default: `10000`) - The query polling timeout (in milliseconds)
 
-CLI Commands
+Installation
 ------------
+
+You can either run this project directly on a host machine, or you can run it in a docker container. If you are going to be running it directly, the dependencies will need to be installed.
+
+You can either run this project directly on a host machine, or you can run it in a docker container. If you are going to be running it directly, the dependencies will need to be installed.
+
+### Running directly on host machine
+
+You need [git](https://git-scm.com/) and [Node.js](https://nodejs.org/) to be installed, then you must clone this repository and install the dependencies:
+
+```
+git clone https://github.com/DJWoodZ/Satisfactory-Discord-Bot.git
+cd Satisfactory-Discord-Bot
+npm install
+cp .env .env.local
+```
+
+You will need edit the `.env.local` file. See the [Environment Variables](#env-vars) section for details.
+
+#### CLI Commands
 
 * `npm start` - Run the Discord bot normally
 * `npm run dev` - Run the Discord bot in 'development' mode (uses nodemon* to restart automatically on .js code changes)
@@ -154,18 +160,17 @@ CLI Commands
 <br />
 \** Install PM2 globally first (see below)
 
-Installing as a service (with PM2)
-----------------------------------
+#### Installing as a service (with PM2)
 
 The `npm run pm2:start` and `npm run pm2:stop` scripts use a global PM2 NPM dependency.
 
-### Installing PM2 globally
+##### Installing PM2 globally
 
 ```
 npm install pm2@latest -g
 ```
 
-### Run as a service (Linux, etc.)
+##### Run as a service (Linux, etc.)
 
 To ensure the Discord bot service starts automatically following a system reboot:
 
@@ -177,7 +182,7 @@ pm2 save
 
 See the [PM2 Process Management Quick Start](https://pm2.keymetrics.io/docs/usage/quick-start/) for details.
 
-### Run as a service (Windows)
+##### Run as a service (Windows)
 
 To run as a service on Windows, you will need to use [pm2-installer](https://github.com/jessety/pm2-installer).
 
@@ -189,3 +194,75 @@ pm2 save
 ```
 
 See the [PM2 Process Management Quick Start](https://pm2.keymetrics.io/docs/usage/quick-start/) for details.
+
+### Running with Docker Compose
+
+This project comes pre-configured ready for use with Docker Compose.
+
+The default Docker Compose configuration (`compose.yaml`) will use the `.env.local` file on the host machine.
+
+The `SATISFACTORY_BOT_DB_PATH` value in `.env.local` will be ignored by the Docker Compose configuration. The default Docker Compose configuration will create and use a database JSON file located on the host machine at: `.\docker-volumes\db\db.json`.
+
+The `SATISFACTORY_BOT_LOG_LOCATION` value in `.env.local` will also be ignored by the Docker Compose configuration. It assumes that the Satisfactory Dedicated Server log file (`FactoryGame.log`) will be accessible on the host machine at: `/opt/satisfactory/config/gamefiles/FactoryGame/Saved/Logs/FactoryGame.log`.
+
+* **SteamCMD Log File Location**
+
+  If you followed [these installation instructions](https://satisfactory.fandom.com/wiki/Dedicated_servers#SteamCMD), `/opt/satisfactory/config/gamefiles/FactoryGame/Saved/Logs/FactoryGame.log` on the host machine should map to `/home/steam/SatisfactoryDedicatedServer/FactoryGame/Saved/Logs/FactoryGame.log` (or the equivalent thereof).
+
+  If log file is not accessible on the host machine at `/opt/satisfactory/config/gamefiles/FactoryGame/Saved/Logs/FactoryGame.log`, you will either need to create a mount point to make the log file accessible at that location or you will need to edit the `compose.yaml` file from this project with the actual location.
+
+* **wolveix/satisfactory-server (Docker) Log File Location**
+
+  If you followed [these installation instructions](https://github.com/wolveix/satisfactory-server#setup), `/opt/satisfactory/config/gamefiles/FactoryGame/Saved/Logs/FactoryGame.log` on the host machine should map to `/path/to/config/gamefiles/FactoryGame/Saved/Logs/FactoryGame.log` (or the equivalent thereof).
+
+  Note: `/path/to/config` is not a real path. You are expected to replace this with the actual path you chose for the wolveix/satisfactory-server config. If you chose `/opt/satisfactory/config`, no additional steps will be necessary. If log file is not accessible on the host machine at `/opt/satisfactory/config/gamefiles/FactoryGame/Saved/Logs/FactoryGame.log`, you will either need to create a mount point to make the log file accessible at that location or you will need to edit the `compose.yaml` file from this project with the actual location.
+
+You need [git](https://git-scm.com/), [Docker](https://docs.docker.com/engine/install/) and [Docker Compose](https://docs.docker.com/compose/install/) to be installed and then you must clone this repository:
+
+```
+git clone https://github.com/DJWoodZ/Satisfactory-Discord-Bot.git
+cd Satisfactory-Discord-Bot
+cp .env .env.local
+```
+
+You will need edit the `.env.local` file. See the [Environment Variables](#env-vars) section for details.
+
+#### Running normally
+
+```
+docker compose up
+```
+
+#### Running in detached mode
+
+To run as a service, use detached mode:
+
+```
+docker compose up -d
+```
+
+#### Force build and recreation
+
+If you need to force Docker Compose to build the image and recreate the container, you can use the `--build` and `--force-recreate` options:
+
+```
+docker compose up --build --force-recreate
+```
+
+This can also be used with detached mode:
+
+```
+docker compose up -d --build --force-recreate
+```
+
+For a full list of options see the [`docker compose up`](https://docs.docker.com/engine/reference/commandline/compose_up/) documentation.
+
+#### Interacting with the container
+
+For development only.
+
+If you need to interact with the container, you can use this command (assuming the container is named `satisfactory-discord-bot-server-1`):
+
+```
+docker exec -it satisfactory-discord-bot-server-1 /bin/sh
+```
