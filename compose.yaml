@@ -1,0 +1,14 @@
+services:
+  server:
+    build:
+      context: .
+    environment:
+      NODE_ENV: production
+      SATISFACTORY_BOT_DB_PATH: /usr/src/app/db/db.json
+      SATISFACTORY_BOT_LOG_LOCATION: /home/steam/SatisfactoryDedicatedServer/FactoryGame/Saved/Logs/FactoryGame.log
+    env_file:
+      - ./.env
+      - ./.env.local
+    volumes:
+       - ./docker-volumes/db/:/usr/src/app/db/
+       - /opt/satisfactory/config/gamefiles/FactoryGame/Saved/Logs/FactoryGame.log:/home/steam/SatisfactoryDedicatedServer/FactoryGame/Saved/Logs/FactoryGame.log:ro
