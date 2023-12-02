@@ -134,8 +134,6 @@ Installation
 
 You can either run this project directly on a host machine, or you can run it in a docker container. If you are going to be running it directly, the dependencies will need to be installed.
 
-You can either run this project directly on a host machine, or you can run it in a docker container. If you are going to be running it directly, the dependencies will need to be installed.
-
 ### Running directly on host machine
 
 You need [git](https://git-scm.com/) and [Node.js](https://nodejs.org/) to be installed, then you must clone this repository and install the dependencies:
