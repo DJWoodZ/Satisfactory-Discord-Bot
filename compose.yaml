@@ -12,3 +12,4 @@ services:
     volumes:
        - ./docker-volumes/db/:/usr/src/app/db/
        - /opt/satisfactory/config/gamefiles/FactoryGame/Saved/Logs/FactoryGame.log:/home/steam/SatisfactoryDedicatedServer/FactoryGame/Saved/Logs/FactoryGame.log:ro
+    restart: unless-stopped
