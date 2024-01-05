@@ -186,6 +186,7 @@ client.on('ready', async () => {
 
     const tail = new Tail(process.env.SATISFACTORY_BOT_LOG_LOCATION, {
       fromBeginning: true,
+      useWatchFile: (process.env.SATISFACTORY_BOT_LOG_USE_WATCH_FILE === 'true'),
     });
 
     tail.on('line', (message) => {
