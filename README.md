@@ -118,7 +118,7 @@ If you do not want the bot to purge its old messages, simply leave these values 
 * `SATISFACTORY_BOT_DISCORD_TOKEN` (Default: `YOUR_DISCORD_TOKEN`) - Your Discord bot token (from the [Discord Developer Portal](https://discord.com/developers/))
 * `SATISFACTORY_BOT_IGNORE_POLL_STATE_WHEN_MESSAGING` (Default: `false`) - Post player joined/left messages, when activity seen in log, even if the server is believed to be offline
 * `SATISFACTORY_BOT_LOG_LOCATION` (Default: `/home/steam/SatisfactoryDedicatedServer/FactoryGame/Saved/Logs/FactoryGame.log`) - The location of the server's log file
-* `SATISFACTORY_BOT_LOG_USE_WATCH_FILE` (Default: `false`) - Force use of `fs.watchFile` (try setting to `true` if the bot does not respond log file changes)
+* `SATISFACTORY_BOT_LOG_USE_WATCH_FILE` (Default: `false`) - Force use of `fs.watchFile` (try setting to `true` if the bot does not respond to log file changes)
 * `SATISFACTORY_BOT_POLL_INTERVAL_MINUTES` (Default: `1`) - How frequently to poll the Dedicated Server (in minutes)
 * `SATISFACTORY_BOT_PURGE_DISCORD_CHANNEL_AFTER_DAYS` (Default: `7`) - How old messages must be before they are deleted (in days)
 * `SATISFACTORY_BOT_PURGE_DISCORD_CHANNEL_AFTER_LINES` (Default: *blank*) - The maximum number of messages to keep
