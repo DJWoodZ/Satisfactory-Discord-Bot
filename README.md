@@ -124,6 +124,7 @@ If you do not want the bot to purge its old messages, simply leave these values 
 * `SATISFACTORY_BOT_PURGE_DISCORD_CHANNEL_AFTER_LINES` (Default: *blank*) - The maximum number of messages to keep
 * `SATISFACTORY_BOT_PURGE_DISCORD_CHANNEL_HOUR` (Default: `2`) - The hour of the day to perform the purge in UTC (e.g. `2` for 2am (UTC))
 * `SATISFACTORY_BOT_PURGE_DISCORD_CHANNEL_NAME` (Default: *blank*) - The Discord channel name to purge (leave blank to disable purging)
+* `SATISFACTORY_BOT_PURGE_DISCORD_CHANNEL_ON_STARTUP` (Default: `false`) - Attempt a purge when the bot first connects
 * `SATISFACTORY_BOT_PURGE_DISCORD_CHANNEL_SERVER_NAME` (Default: *blank*) - The Discord server name with the channel to purge (leave blank to disable purging)
 * `SATISFACTORY_BOT_SERVER_IP` (Default: `127.0.0.1`) - The IP address of the Dedicated Server
 * `SATISFACTORY_BOT_SERVER_MAX_PLAYERS` (Default: `4`) - The maximum number of players the server allows (this should reflect the same number as your server's `MaxPlayers` setting)
