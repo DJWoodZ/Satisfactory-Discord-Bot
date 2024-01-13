@@ -78,6 +78,21 @@ const sendMessage = (message) => {
   }
 };
 
+const attemptPurge = () => {
+  const now = new Date().getTime();
+  if (willPurge() && now >= nextPurge) {
+    // set next purge time
+    nextPurge = getNextPurge();
+    console.log('Looking for messages to purge...');
+    try {
+      purgeOldMessages(client);
+    } catch (e) {
+      console.error(e);
+    }
+    console.log(`Next purge will be ${new Date(nextPurge)}`);
+  }
+};
+
 const update = async () => {
   try {
     const previouslyUnreachable = db.server.unreachable;
@@ -140,18 +155,7 @@ const update = async () => {
     }
   }
 
-  const now = new Date().getTime();
-  if (willPurge() && now >= nextPurge) {
-    // set next purge time
-    nextPurge = getNextPurge();
-    console.log('Looking for messages to purge...');
-    try {
-      purgeOldMessages(client);
-    } catch (e) {
-      console.error(e);
-    }
-    console.log(`Next purge will be ${new Date(nextPurge)}`);
-  }
+  attemptPurge();
 };
 
 const getPlayerFromDB = (userId) => db?.players?.[userId];
@@ -160,8 +164,12 @@ client.on('ready', async () => {
   const initTime = new Date().getTime();
 
   if (willPurge()) {
-    nextPurge = getNextPurge();
-    console.log(`First purge will be ${new Date(nextPurge)}`);
+    if (process.env.SATISFACTORY_BOT_PURGE_DISCORD_CHANNEL_ON_STARTUP === 'true') {
+      attemptPurge();
+    } else {
+      nextPurge = getNextPurge();
+      console.log(`First purge will be ${new Date(nextPurge)}`);
+    }
   }
 
   if (intervalTimer) {
