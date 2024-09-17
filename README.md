@@ -55,7 +55,7 @@ How does it work?
 
 The bot is fully automatic. It does not require or respond to Discord user commands.
 
-It retrieves the status of the server by polling the query port (default: `15777`) using [this library](https://www.npmjs.com/package/@djwoodz/satisfactory-dedicated-server-query-port-probe). By default it will poll the port once per minute.
+It retrieves the status of the server by polling the server port (default: `7777`) using [this library](https://www.npmjs.com/package/@djwoodz/satisfactory-dedicated-server-lightweight-query-probe). By default it will poll the port once per minute.
 
 It gets the player information by monitoring the server's log file. The log file is monitored in realtime. If the bot is not running in the same environment as the Satisfactory Dedicated Server, realtime access to the log file will need to be provided (e.g. via a filesystem mount).
 
@@ -91,7 +91,7 @@ It would work but you shouldn't do that. It is good practice to create and edit 
 
 ### Which variables must I edit?
 
-As a minimum you will need to specify a `SATISFACTORY_BOT_DISCORD_TOKEN` value, which you obtain via the [Discord Developer Portal](https://discord.com/developers/). You will also need to verify that the `SATISFACTORY_BOT_LOG_LOCATION`, `SATISFACTORY_BOT_SERVER_IP`, `SATISFACTORY_BOT_SERVER_QUERY_PORT` and `SATISFACTORY_BOT_SERVER_MAX_PLAYERS` values are correct.
+As a minimum you will need to specify a `SATISFACTORY_BOT_DISCORD_TOKEN` value, which you obtain via the [Discord Developer Portal](https://discord.com/developers/). You will also need to verify that the `SATISFACTORY_BOT_LOG_LOCATION`, `SATISFACTORY_BOT_SERVER_IP`, `SATISFACTORY_BOT_SERVER_PORT` and `SATISFACTORY_BOT_SERVER_MAX_PLAYERS` values are correct.
 
 ### Anything else to be aware of?
 
@@ -128,7 +128,7 @@ If you do not want the bot to purge its old messages, simply leave these values 
 * `SATISFACTORY_BOT_PURGE_DISCORD_CHANNEL_SERVER_NAME` (Default: *blank*) - The Discord server name with the channel to purge (leave blank to disable purging)
 * `SATISFACTORY_BOT_SERVER_IP` (Default: `127.0.0.1`) - The IP address of the Dedicated Server
 * `SATISFACTORY_BOT_SERVER_MAX_PLAYERS` (Default: `4`) - The maximum number of players the server allows (this should reflect the same number as your server's `MaxPlayers` setting)
-* `SATISFACTORY_BOT_SERVER_QUERY_PORT` (Default: `15777`) - The Dedicated Server's query port
+* `SATISFACTORY_BOT_SERVER_PORT` (Default: `7777`) - The Dedicated Server's port
 * `SATISFACTORY_BOT_SERVER_QUERY_TIMEOUT_MS` (Default: `10000`) - The query polling timeout (in milliseconds)
 
 Installation

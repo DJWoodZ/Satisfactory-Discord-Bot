@@ -1,6 +1,6 @@
 #! /usr/bin/env node
 
-const { probe } = require('@djwoodz/satisfactory-dedicated-server-query-port-probe');
+const { probe } = require('@djwoodz/satisfactory-dedicated-server-lightweight-query-probe');
 const {
   Client, GatewayIntentBits, PermissionsBitField, ChannelType,
 } = require('discord.js');
@@ -101,7 +101,7 @@ const update = async () => {
     console.log('Updating...');
     const rawData = await probe(
       process.env.SATISFACTORY_BOT_SERVER_IP,
-      process.env.SATISFACTORY_BOT_SERVER_QUERY_PORT,
+      process.env.SATISFACTORY_BOT_SERVER_PORT,
       process.env.SATISFACTORY_BOT_SERVER_QUERY_TIMEOUT_MS,
     );
 
