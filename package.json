@@ -22,18 +22,18 @@
   "author": "DJ WoodZ",
   "license": "MIT",
   "dependencies": {
-    "@djwoodz/satisfactory-dedicated-server-query-port-probe": "^0.1.1",
+    "@djwoodz/satisfactory-dedicated-server-lightweight-query-probe": "^0.1.0",
     "deepmerge": "^4.3.1",
     "discord.js": "^14.14.1",
-    "dotenv-flow": "^4.0.1",
+    "dotenv-flow": "^4.1.0",
     "lodash": "^4.17.21",
     "signal-exit": "^4.1.0",
     "tail": "^2.2.6",
     "wait-on": "^7.2.0"
   },
   "devDependencies": {
-    "eslint": "^8.55.0",
+    "eslint": "^8.27.1",
     "eslint-config-airbnb-base": "^15.0.0",
-    "eslint-plugin-import": "^2.29.0"
+    "eslint-plugin-import": "^2.30.0"
   }
 }
